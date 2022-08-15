@@ -72,7 +72,7 @@
       : set this value to 2
   - __Every VPC must have only one DHCP assigned to it__
 
-- __AmazonProvidedDNS__
+- __Amazon Provided DNS__
   : amazon domain name system (DNS) server
   - enables DNS for systems communicating over internet (IGW)
 
@@ -86,5 +86,84 @@
     - Can move EIPs from one instance to another (same region but different VPC allowed)
     - Charges for EIPs allocated to your account (even if not in use)
 
+- __Elastic Network Interfaces (ENI)__
+  : virtual network interface that you can attach to an instance in an Amazon VPC
+  - only available within a VPC
+  - associated with a subnet on creation
+  - one public IP address, multiple private IP addresses
+  - created independentely of a particular instance 
+    - IP address may be preserved by attaching the ENI to a replacement instance
+  - Enables:
+    - create a management network
+    - use network and security appliances in your VPC
+    - create dual-homed instances w/ workloads/roles on distinct subnets
+    - create a low-budget, high availability solution
 
+- __Endpoints__
+  : create a private connection between your amazon VPC and another AWS service without requiring access over the internet, NAT, VPN connection or AWS Direct Connect.
+  - support communicating with Amazon S3
+  - can create multiple endpoints for a single service
+  - can use different route tables to enforce different access policies from different subnets
+  - How to create:
+    1. Specify the Amazon VPC
+    2. Specify the service (e.g `com.amazonaws.<region>.<service>`)
+    3. Specify the policy (can be changed at any time)
+    4. Specify the route tables
 
+_e.g Endpoint Route Table_
+
+|Destination|Target|
+|--|--|
+|`10.0.0.0/16`|Local|
+|`0.0.0.0/0`|igw-1a2b3c5d|
+
+- __Peering__
+  : networking connection between two Amazon VPCs
+  - different VPC's communicate as if they are in the same VPC
+  - **not** a Gateway or an Amazon VPN & does **not** introduce a _single point of failure_
+  - peering connections are created through a _request/accept_ protocol
+    - identified by its VPC ID and Account ID depending on if the VPC exists in the same or different account.
+    - Owner of the peer has _1 week_ to accept or reject the request to peer before expiry
+  - may have multiple peering connections
+  - peering is a _one-to_one_ relationship
+  - peering connections _do not support **transitive routing**_
+    : can not communicate to VPC `B` from VPC `A` through VPC `C`
+  - Important points:
+    - cannot create a peering connection between VPCs that have matching or overlapping CIDR blocks
+    - cannot be in _different_ regions
+    - cannot have more than one peering connection between the same two Aamzon VPCs at the same time
+
+- __Security Groups__
+  : virtual _stateful_ firewall that controls inbound and outbound network traffic to AWS resources and EC2 instances
+  - default security group if not specified
+    1. allow inbound traffic from instances within the same security group
+    2. Allow all outbound traffic
+  - Important points:
+    - up to 500 security groups for each Amazon VPC
+    - up to 50 inbound and outbound rules for each security group
+    - specify "allow rules" not "deny rules" (whitelisting)
+    - Security groups are stateful
+      : responses to allowed inbound traffic are allowed to flow outbound regardless of outbound rules
+    - instances associated with the same security group cannot talk to each other unless you add rules allowing it (_excl. default security group_)
+    - can change the security groups after launch
+
+- __Network Access Control Lists (ACLs)__
+  : another layer of security that acts as a _stateless_ firewall on a subnet level
+  - a numbered list of rules that AWS evaluates in order
+  - determines whether traffic is allowed in or out of any subnet associated with the network ACL
+  - default allows all (can be modified)
+  - Every subnet must be associated with a network ACL
+
+__Security Groups Vs Network ACL__
+
+|Security Group|Network ACL|
+|--|--|
+|Operates at the instance level|Operates at the Subnet level|
+|Supports allow rules only|Supports allow rules and deny rules|
+|Stateful|Stateless|
+|AWS evaluates all rules before deciding whether to allow traffic|AWS processes rules in number order deciding whether to allow traffic|
+|Applied selectively to individual instances|Automatically applied to all instances in the associated subnets|
+
+- __Network Address Translation (NAT)__
+  : Amazon Linux Machine (AMI) that is designed t oaccept traffic from instances within a private subnet, translate the source IP address to the public IP address of the NAT instance.
+  - 
