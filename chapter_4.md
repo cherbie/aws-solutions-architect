@@ -165,5 +165,39 @@ __Security Groups Vs Network ACL__
 |Applied selectively to individual instances|Automatically applied to all instances in the associated subnets|
 
 - __Network Address Translation (NAT)__
-  : Amazon Linux Machine (AMI) that is designed t oaccept traffic from instances within a private subnet, translate the source IP address to the public IP address of the NAT instance.
-  - 
+  : Amazon Linux Machine (AMI) that is designed to accept traffic from instances within a private subnet, translate the source IP address to the public IP address of the NAT instance and forward the traffic to the NAT instance.
+  - NAT instance maintains the state of the forwarded traffic in order to return response traffic from the internet to the proper instance in the private subnet.
+  - instances contain the string `amzn-ami-vpc-nat` in their name
+  - Steps to allow _private_ subnet access to **send** (**not receive**) outbound internet traffic (IGW):
+    1. Create a security group for the NAT with outbound rules that specify the needed internet resources by port, protocol and IP address
+    2. Launch an Amazon Linux NAT AMI as an instance in a public subnet and associate it with the NAT _security group_
+    3. Disable the Source/Destination Check attribute of the NAT
+    4. Configure the route table associated with a private subnet to direct Internet-bound traffic to the NAT instance
+    5. Allocate an EIP and associate it with the NAT instance
+
+- __NAT Gateway__
+  : Amazon managed resource that is designed to operate just like a NAT instance
+  - simpler to manage
+  - highly available within an Availability Zone
+  - Steps to allow _private_ subnet to send **outbound** Internet traffic via a NAT gateway:
+    1. Configure the route table associated with the private subnet to direct Internet-bound traffic to the NAT gateway
+    2. Allocate an _EIP_ and associate it with the NAT gateway
+
+- __Virtual Private Gateways (VPG)__
+  : _virtual private network (VPN)_ concentrator on the AWS side of the VPN connection
+  - AWS end of the VPN Tunnel
+  - VPGs support both _dynamic routing with BGP_ and _static routing_.
+
+- __Customer Gateway (CGW)__
+  : a physical device or a software application on the customer's side of the VPN connection
+  - _Amazon VPC_ supports multiple _CGWs_
+    - many _VPN connection_ to a single _VPG_ (many-to-one)
+  - initiate the _VPN tunnel_ from the _CGW_ to the _VPG_
+
+- __Virtual Private Network (VPN)__
+  - specify the type of routing that you plan to use when you create a VPN connection (_dynamic_ vs _static_)
+  - Routes will be propogated to the Amazon VPC
+  - _VPN Connection_ consists of two **Internet Protocol Security (IPSec)** tunnels for _higher availability_ to the _Amazon VPC_
+
+- __Border Gateway Protocol (BGP)__
+  - can configure the VPN connection for *dynamic routing*
