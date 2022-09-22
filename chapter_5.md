@@ -85,4 +85,72 @@
   - `InService` -> healthy status at time of health check
   - `OutOfService` -> _unhealthy_ status at time of health check
 
+- __Amazon CloudWatch__
+  : service used to monitor AWS resources and your applications in real time
+  - collect & track metrics, create alarms, make changes to resources being monitored based on rules
+  - __Basic Monitoring:__
+    - sends data points to _CloudWatch_ every 5 minutes
+    - limited amount of pre-selected metrics
+    - no charge
+  - __Detailed Monitoring:__
+    - sends data points to _CloudWatch_ every minute
+    - allows data aggregation
+    - cost involved
+  - Can provide custom metrics (e.g Amazon EC2 memory consumption & disk metrics that are visible to the operating system of the Amazon EC2 instance but not visible to AWS or application specific thresholds
+  - Custom metrics can be `PUT` into _CloudWatch_ via an API as a _name-value_ pair
+  - used to monitor, store and access log files
+  - limited to **5000 alarms** per AWS account
+  - metrics data is retained for **2 weeks**
 
+- **CloudWatch Logs Agent**
+  : provides an automated way to send log data to _CloudWatch_ for _EC2 instances_ running Amazon Linux or Ubuntu
+
+- **Auto-Scaling**
+  : service that allows you to scale your Amazon _EC2_ capacity automatically by scaling in and out in according to criteria you define
+
+- **Auto Scaling Plans**
+  1. Maintain Current Instance Levels
+     : maintain a minimum or specified number of running instances at all times
+  2. Manual Scaling
+     : only need to specify the change in your minimum, maximum or desired capacity of your Auto Scaling group
+     - most basic option
+  3. Scheduled Scaling
+     : scaling functions are performed automatically as a function of time and date
+  4. Dynamic Scaling
+     : you define parameters that control the auto-scaling process in a scaling policy
+
+- **Auto Scaling Components**
+  - Launch Configuration
+  - Auto Scaling Group
+  - Scaling Policy
+
+- **Launch Configuration**
+  : the template that _Auto Scaling_ uses to create new instances
+  - each _Auto Scaling_ group can only have **one** launch configuration at a time
+  - composed of:
+    - configuration name
+    - AMI
+    - EC2 instance type
+    - security group
+    - instance key-pair
+
+- **Auto Scaling Group**
+  : collection of _EC2 instances_ managed by the auto-scaling service
+  - configuration of when new instances should be launched or terminated
+  - name, minimum and maximum number of instances that the group must have
+  - e.g cli
+    ```bash
+    aws autoscaling create-auto-scaling-group \
+        --auto–scaling-group-name myASG \
+        --launch-configuration-name myLC \
+        --availability-zones us-east-1a, us-east-1c \
+        --min-size 1 \
+        --max-size 10 \
+        --desired-capacity 3 \
+        --load-balancer-names myELB
+    ```
+  - can use either _on-demand_ or _spot_ ec2 instances
+    - _spot ec2 instances_ need to list a maximum bid price
+
+- **Scaling Policy**
+  : associate _CloudWatch alarms_ and _scaling policies_ with _Auto Scaling groups_ to adjust dynamically
