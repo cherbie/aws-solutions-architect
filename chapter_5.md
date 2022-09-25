@@ -154,3 +154,28 @@
 
 - **Scaling Policy**
   : associate _CloudWatch alarms_ and _scaling policies_ with _Auto Scaling groups_ to adjust dynamically
+  - when a threshold is crossed, _CloudWatch_ sends alarms to trigger changes
+  - can associate more than one scaling policy to an _auto scaling group_
+  - e.g you can create a policy using the trigger for CPU utilization, called CPULoad, and the CloudWatch metric CPUUtilization to specify scaling out if CPU utilization is greater than 75 percent for two minutes.
+  - **best practice**: _scale out_ quickly and _scale in_ slowly
+  - important to consider bootstrapping for _EC2 instances_ ... takes time to configure each new instance
+  - _EC2 instances_ that are **stateless** rather than **stateful** will more gracefully enter and exit an _Auto Scaling Group_
+
+```bash
+aws autoscaling put-scaling-policy \
+    --auto-scaling-group-name myASG \
+    --policy-name CPULoadScaleOut \
+    --scaling-adjustment 1 \
+    --adjustment-type ChangeInCapacity 
+    --cooldown 30
+aws autoscaling put-scaling-policy \
+    --auto-scaling-group-name myASG \
+    --policy-name CPULoadScaleIn \
+    --scaling-adjustment -1 \
+    --adjustment-type ChangeInCapacity \
+    --cooldown 600
+```
+
+- **Cooldown Period**
+  : configurable setting that determines when to suspend scaling activities for a short time for an _Auto Scaling Group_
+
