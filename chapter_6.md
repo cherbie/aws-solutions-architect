@@ -124,3 +124,16 @@
 
 - **Multi-Factor Authentication (MFA)**
   : extra layer of security to your infrastructure by adding a second method of authentication beyond just a password or access key
+  - application using MFA must _query the application user_ to provide the current code
+
+- **Rotating Keys**
+  - security best practice to _rotate access keys_ 
+  - IAM facilitates process by allowing two active access keys at a time
+
+- **Resolving Multiple Permission Conflicts**
+  1. Initally the request is denied by default
+  2. All the appropriate policies are evaluated
+     - if there is an _explicit 'deny'_ found in any policy -> the request is denied and evaluation stops
+  3. If no _explicit 'deny'_ is found and an explicit "allow" is found in any policy -> the request is alloweed
+  4. If no _explicit 'allow'/'deny'_ permissions are found -> request is denied
+     - default "deny" is maintained
