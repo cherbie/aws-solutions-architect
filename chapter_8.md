@@ -74,5 +74,111 @@
   - close coordination between accounts may allow these types of actions through the use of IAM roles, but it is frequently infeasible
   - **Amazon SQS Access Control**
    : allows you to assign policies to queues that grant specific interactions to other accounts without that account having to assume IAM roles from your account
+
+- **Amazon Simple Workflow Service (SWF)**
+  : stores tasks, assigns them to workers when they are ready and monitors their progress, and maintains their state, including details on their completion
+  - makes it easy to build applications that coordinate work across distributed components
+  - **Task**
+    : represents a logical unit of work that is performed by a component of your application
+  - implement _workers_ to perform _tasks_
+  - workers can either run on cloud infrastructure or on-premise
+  - allows the application to be resilient to failures in individual components
+
+- **Workflows**
+  : coordinate and manage the execution of acitivities that cna be run asychronously across multiple computing devices
+  - sequential or parallel processing
+  - activities = component tasks
+  - workflow coordination logic determines the order in which activities are executed
+
+- **Workflow Domains**
+  : provide a way of scoping _Amazon SWF_ resources
+  - must specify a _domain_ for all the components of a workflow
+  - workflows in different domains cannot interact with each other
+
+- **Workflow History**
+  : detailed, complete, and consistent record of every event that occured since the workflow execution started
+  - an **event** represents a _discrete change_ in your _workflow execution's state_.
+
+- **Actors**
+  : a number of different types of programmatic features
+  - e.g workflow starters, deciders or activity workers
+  - communicate with _Amazon SWF_ through the API
+  - develop actors in any programming language
+
+- **Workflow Starter (Actor)**
+  : any application that can initiate workflow executions
+  - e.g mobile application where a customer orders takeout food or requests a taxi
+
+- **Decider (Actor)**
+  : logic that coordinates the tasks in a workflow
+  - schedules the activity tasks and provides input data to the activity workers
+  - processes events that arrive while the workflow is in progress and closes the workflow when the objective is complete
+  - Decides when and if _'activities'_ run sequentially, in parallel, synchronously or asynchronously
+
+- **Activity Worker (Actor)**
+  : single computer process (or thread) that performs the activity tasks in you workflow
+  - different types of _activity workers_ process tasks of different _activity types_
+  - polls Amazon SWF for tasks that are appropriate for that activity worker
  
+- **Tasks**
+  - Three types of tasks:
+    1. Activity Tasks
+       : tells an activity worker how to perform it's function 
+    2. Lambda Tasks
+       - similar to an activity task
+    3. Decision Tasks
+       : tells a decider the state of the workflow execution has changed
+       - AWS SWF schedules a _decision task_ at the start and every time the state changes
+       - contains a paginated view of the entire workflow history
+
+- **Task Lists**
+  : provide a way of organizing the various tasks associated with a workflow
+  - similar to dynamic queues
+  - provide a flexible mechanism to route tasks to workers as your use case necessitates
+
+- **Long Polling**
+  - _Deciders_ and _activity_ workers communicate with _Amazon SWF_ using **long polling**
+  - periodically initiate communication with _SWF_
+
+- **Object Identifiers**
+  - _SWF_ objects are uniquely identified by **workflow type**, **activity type**, **decision** and **activity** tasks and **workflow execution**
+  - `RegisterWorkflowType`
+  - `RegisterActivityType`
+  - Each decision task and activity task is identified by a unique task token
+  - `PollForDecisionTask`
+  - `PollForActivityTask`
+  - `StartWorkflowExecution`
+    : returns a run ID
+
+- **Workflow Execution Closure**
+  - can be closed as one of:
+    - completed
+    - cancelled
+    - failed
+    - timed-out
+  - can be _continued_ as a new execution or terminated
+
+**Lifecycle of Workflow Execution**
+
+![Amazon SWF Workflow Execution Lifecycle](./images/swf_lifecycle.png)
+
+- **Amazon Simple Notification Service (SNS)**
+  : web service for mobile and enterprise messaging that enables you to set up, operate, and send notifications
+  - **publish-subscribe** message paradigm
+  - create a topic and control access to it by defining policies that determine which publishers and subscribers can communicate with the topic and via which technologies
+  - Each topic has a unique name that identifies the Amazon SNS endpoint where publishers post messages and subscribers register for notifications
+
+- **Common SNS Scenarios**
+  - **Fanout**
+    : SNS message is sent to a topic and then replicated and pushed to multiple Amazon SQS queues, HTTP endpoints, or email addresses
+    - allows for parallel asynchronous processing
+    - additionally could be used to replicate data
+  - **Application & System Alerts**
+    : SMS and/or email notifications that are triggered by pre-defined thresholds
+    - e.g CloudWatch services use SNS
+  - **Push Email & Text Messaging**
+    : transmit messages to individuals or groups via email and/or SMS
+  - **Mobile Push Notifications**
+    : send messages directly to mobile applications
+    - e.g send message to mobile indicating an update is available
 
