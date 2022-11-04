@@ -9,6 +9,7 @@
     - should design your system to be _indoponent_
   - service does not garuantee _FIFO_ queueing
     - need to add sequencing information to message packets if it is important
+  - messages are _identitified_ by a **globally unique ID** 
 
 !][SQS Message Lifecycle](./images/sqs_lifecycle.png)
 
@@ -30,6 +31,48 @@
   : when a message is neither delayed nor in a visibility timeout
   - up to 120,000 messages in flight at any given time
 
+- **Queue Operations**
+  1. `CreateQueue`
+  2. `ListQueues`
+  3. `DeleteQueue`
+  4. `SendMessage`
+  5. `SendMessageBatch`
+  6. `ReceiveMessage`
+  7. `DeleteMessage`
+  8. `DeleteMessageBatch`
+  9. `PurgeQueue`
+  10. `ChanceMessageVisibility`
+  11. `ChangeMessageVisibilityBatch`
+  12. `SetQueueAttributes`
+  13. `GetQueueAttributes`
+  14. `GetQueueUrl`
+  15. `ListDeadLetterSourceQueues`
+  16. `AddPermission`
+  17. `RemovePermission`
 
+- **Queue and Message Identifiers**
+  : amazon SQS uses **three** identifiers
+  1. Queue URLs
+  2. Message IDs
+  3. Receipt handles
 
+- **Message Attributes**
+  : allow you to provide structured metadata items
+  - up to 10 attributes per message
+
+- **Long Polling**
+  - `ReceiveMessage` function queries the Amazon SQS for messages
+  - send a `WaitTimeSeconds` argument to `ReceiveMessage` (up to _20 seconds_)
+
+- **Dead Letter Queue**
+  : a queue that other queues target to send messages that for some reason could not be successfully processed
+  - primary benefit: ability to _sideline_ and _isolate_ the unsuccessfully processed messages.
+  - Analyze any messages sent to the dead leter queue to try to determine the cause of failure
+
+- **Access Control**
+  - IAM can be used
+  - close coordination between accounts may allow these types of actions through the use of IAM roles, but it is frequently infeasible
+  - **Amazon SQS Access Control**
+   : allows you to assign policies to queues that grant specific interactions to other accounts without that account having to assume IAM roles from your account
+ 
 
